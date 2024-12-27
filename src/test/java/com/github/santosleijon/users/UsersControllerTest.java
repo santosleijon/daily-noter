@@ -19,11 +19,14 @@ class UsersControllerTest {
 
     UsersDAO mockedUsersDAO = Mockito.mock(UsersDAO.class);
     UsersDAOMock usersDAOMock = new UsersDAOMock();
+    UserSessionsDAO mockedUserSessionsDAO = Mockito.mock(UserSessionsDAO.class);
+    UserSessionsDAOMock userSessionsDAOMock = new UserSessionsDAOMock();
 
     @BeforeEach
     public void beforeEach() {
         environmentVariableReaderMock.setupMock(mockedEnvironmentVariableReader);
         usersDAOMock.setupMock(mockedUsersDAO);
+        userSessionsDAOMock.setupMock(mockedUserSessionsDAO);
     }
 
     @Test
@@ -64,12 +67,17 @@ class UsersControllerTest {
     }
 
     @Test
-    public void loginShouldReturnSuccessWhenInvalidPasswordIsSubmitted() {
+    public void loginShouldReturnSuccessWhenValidUserCredentialsAreSubmitted() {
         JavalinTest.test(getJavalinAppUnderTest(), (server, client) -> {
             var requestBuilder = createLoginRequest(server.port(), "user@example.com", "my-secret-password");
 
             try (var response = client.request(requestBuilder)) {
                 assertThat(response.code()).isEqualTo(200);
+                var cookie = response.header("Set-Cookie");
+                assertThat(cookie).contains("sessionId=");
+                assertThat(cookie).contains("HttpOnly");
+                assertThat(cookie).contains("SameSite=Strict");
+                assertThat(cookie).contains("Path=/");
                 assert response.body() != null;
                 assertThat(response.body().string()).isEqualTo("{ \"result\": \"ok\" }");
             }
@@ -77,14 +85,14 @@ class UsersControllerTest {
     }
 
     private Javalin getJavalinAppUnderTest() {
-        return Application.getJavalinApp(mockedUsersDAO);
+        return Application.getJavalinApp(mockedUsersDAO, mockedUserSessionsDAO);
     }
 
     private static Request createLoginRequest(int serverPort, String email, String password) {
         var requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("EMAIL", email)
-                .addFormDataPart("PASSWORD", password)
+                .addFormDataPart("email", email)
+                .addFormDataPart("password", password)
                 .build();
 
         return new Request.Builder()
