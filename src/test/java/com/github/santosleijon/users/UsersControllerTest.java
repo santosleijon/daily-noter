@@ -2,6 +2,7 @@ package com.github.santosleijon.users;
 
 import com.github.santosleijon.Application;
 import com.github.santosleijon.common.EnvironmentVariableReader;
+import common.EnvironmentVariableReaderMock;
 import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
 import okhttp3.MultipartBody;

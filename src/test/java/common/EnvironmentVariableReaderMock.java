@@ -1,4 +1,4 @@
-package com.github.santosleijon.users;
+package common;
 
 import com.github.santosleijon.common.EnvironmentVariableReader;
 import org.mockito.Mockito;
