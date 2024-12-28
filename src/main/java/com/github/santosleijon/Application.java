@@ -23,6 +23,7 @@ public class Application {
         var usersController = new UsersController(usersDAO, userSessionsDAO);
 
         app.post("/api/users/login", usersController::login);
+        app.post("/api/users/logout", usersController::logout);
 
         return app;
     }

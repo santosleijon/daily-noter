@@ -46,12 +46,12 @@ public class UsersController {
                     Instant.now().plus(Duration.ofDays(365))
             );
 
-            userSessionsDAO.insert(userSession);
+            userSessionsDAO.upsert(userSession);
 
             // TODO: Delete all except the latest 3 sessions for the user
 
             ctx.cookie(createSessionCookie(userSession));
-            ctx.result("{ \"result\": \"ok\" }");
+            ctx.result("{ \"sessionId\": \"" + userSession.sessionId().toString() + "\" }");
             ctx.status(HttpStatus.OK);
         } catch (InvalidUserCredentialsException e) {
             ctx.result(new ErrorResponse("Invalid user credentials").toJson());
@@ -61,7 +61,29 @@ public class UsersController {
         }
     }
 
-    // TODO: logout()
+    public void logout(Context ctx) {
+        var sessionId = ctx.cookie("sessionId");
+
+        if (sessionId == null || sessionId.isBlank()) {
+            ctx.result(new ErrorResponse("User session cookie missing").toJson());
+            ctx.status(HttpStatus.UNAUTHORIZED);
+            return;
+        }
+
+        try {
+            UserSession userSession = userSessionsDAO.find(UUID.fromString(sessionId));
+            UserSession invalidatedUserSession = userSession.withValidTo(Instant.now());
+            userSessionsDAO.upsert(invalidatedUserSession);
+            ctx.removeCookie("sessionId");
+            ctx.result("{ \"sessionId\": \"" + sessionId + "\" }");
+        } catch (UserSessionNotFound e) {
+            ctx.result(new ErrorResponse(e.getMessage()).toJson());
+            ctx.status(HttpStatus.BAD_REQUEST);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     // TODO: getCurrentUserSession()
 
     private Cookie createSessionCookie(UserSession userSession) {
