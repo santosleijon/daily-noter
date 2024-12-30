@@ -1,6 +1,5 @@
 package com.github.santosleijon.users;
 
-import org.mockito.ArgumentCaptor;
 import org.mockito.stubbing.Answer;
 
 import java.time.Instant;
@@ -9,7 +8,7 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-public class UsersDAOMock extends UsersDAO {
+public class UsersDAOMock implements UsersDAO {
 
     UserDetailsForAuthentication userDetailsForExistingUser = new UserDetailsForAuthentication(
             UUID.randomUUID(),

@@ -1,8 +1,6 @@
 package com.github.santosleijon;
 
-import com.github.santosleijon.users.UserSessionsDAO;
-import com.github.santosleijon.users.UsersDAO;
-import com.github.santosleijon.users.UsersController;
+import com.github.santosleijon.users.*;
 import io.javalin.Javalin;
 
 public class Application {
@@ -11,8 +9,8 @@ public class Application {
 
     public static void main(String[] args) {
         // TODO: Replace with dependency injection using Guice?
-        var usersDAO = new UsersDAO();
-        var userSessionsDAO = new UserSessionsDAO();
+        var usersDAO = new UsersDAOImpl();
+        var userSessionsDAO = new UserSessionsDAOImpl();
 
         getJavalinApp(usersDAO, userSessionsDAO).start(PORT);
     }

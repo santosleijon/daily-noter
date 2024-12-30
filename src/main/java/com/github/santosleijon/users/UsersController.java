@@ -47,8 +47,7 @@ public class UsersController {
             );
 
             userSessionsDAO.upsert(userSession);
-
-            // TODO: Delete all except the latest 3 sessions for the user
+            userSessionsDAO.invalidateOldSessions(userDetailsForAuthentication.userId());
 
             ctx.cookie(createSessionCookie(userSession));
             ctx.result("{ \"sessionId\": \"" + userSession.sessionId().toString() + "\" }");

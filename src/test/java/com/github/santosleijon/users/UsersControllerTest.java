@@ -77,7 +77,7 @@ class UsersControllerTest {
     @Test
     public void loginShouldReturnSuccessWhenValidUserCredentialsAreSubmitted() {
         JavalinTest.test(getJavalinAppUnderTest(), (server, client) -> {
-            var request = createLoginRequest(server.port(), "user@example.com", "my-secret-password");
+            var request = createValidLoginRequest(server);
 
             try (var response = client.request(request)) {
                 assertThat(response.code()).isEqualTo(200);
@@ -93,9 +93,35 @@ class UsersControllerTest {
     }
 
     @Test
+    public void loginShouldInvalidateAllButTheLatestThreeValidSessions() {
+        JavalinTest.test(getJavalinAppUnderTest(), (server, client) -> {
+            // Create three user sessions
+            for (int i = 0; i<3; i++) {
+                var loginRequest = createValidLoginRequest(server);
+
+                try (var loginResponse = client.request(loginRequest)) {
+                    assertThat(loginResponse.code()).isEqualTo(200);
+                }
+            }
+
+            var userId = usersDAOMock.userDetailsForExistingUser.userId();
+            assertThat(userSessionsDAOMock.getValidSessionsCount(userId)).isEqualTo(3);
+
+            // Create a fourth user session that will invalidate the oldest previous one
+            var loginRequest = createValidLoginRequest(server);
+
+            try (var loginResponse = client.request(loginRequest)) {
+                assertThat(loginResponse.code()).isEqualTo(200);
+            }
+
+            assertThat(userSessionsDAOMock.getValidSessionsCount(userId)).isEqualTo(3);
+        });
+    }
+
+    @Test
     public void logoutShouldInvalidateUserSession() {
         JavalinTest.test(getJavalinAppUnderTest(), (server, client) -> {
-            var loginRequest = createLoginRequest(server.port(), "user@example.com", "my-secret-password");
+            var loginRequest = createValidLoginRequest(server);
 
             try (var loginResponse = client.request(loginRequest)) {
                 assert loginResponse.body() != null;
@@ -136,5 +162,9 @@ class UsersControllerTest {
                 .addHeader("Content-Type", "application/x-www-form-urlencoded")
                 .post(requestBody)
                 .build();
+    }
+
+    private static Request createValidLoginRequest(Javalin server) {
+        return createLoginRequest(server.port(), "user@example.com", "my-secret-password");
     }
 }
