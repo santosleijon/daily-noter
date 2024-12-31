@@ -15,7 +15,5 @@ class PasswordUtilsTest {
         assertThat(hashedPassword).isNotEqualTo(plainPassword);
 
         assertThat(PasswordUtils.verifyPassword(plainPassword, hashedPassword)).isTrue();
-
-        System.out.println(hashedPassword);
     }
 }
