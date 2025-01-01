@@ -38,10 +38,11 @@ public class UsersController {
                 throw new InvalidUserCredentialsException();
             }
 
-            // TODO: Store IP Address and User-Agent?
             UserSession userSession = new UserSession(
                     UUID.randomUUID(),
                     userDetailsForAuthentication.userId(),
+                    ctx.userAgent(),
+                    ctx.ip(),
                     Instant.now(),
                     Instant.now().plus(Duration.ofDays(365))
             );

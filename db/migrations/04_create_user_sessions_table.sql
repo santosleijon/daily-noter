@@ -2,6 +2,8 @@
 CREATE TABLE IF NOT EXISTS user_sessions (
     session_id UUID PRIMARY KEY,
     user_id UUID NOT NULL,
+    user_agent TEXT NOT NULL,
+    ip_address VARCHAR(15) NOT NULl,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
     valid_to TIMESTAMP WITH TIME ZONE NOT NULL
 );

@@ -25,18 +25,20 @@ public class UserSessionsDAOImpl implements UserSessionsDAO {
             }
 
             UUID userId = UUID.fromString(resultSet.getString("user_id"));
+            String userAgent = resultSet.getString("user_agent");
+            String ipAddress = resultSet.getString("ip_address");
             Instant createdAt = TimestampUtil.getInstantFromResultSet(resultSet, "created_at");
             Instant validTo = TimestampUtil.getInstantFromResultSet(resultSet, "created_at");
 
-            return new UserSession(sessionId, userId, createdAt, validTo);
+            return new UserSession(sessionId, userId, userAgent, ipAddress, createdAt, validTo);
         }
     }
 
     @Override
     public void upsert(UserSession userSession) throws SQLException {
         try (var connection = DatabaseConnection.getConnection()) {
-            var query = "INSERT INTO user_sessions (session_id, user_id, created_at, valid_to)" +
-                        "VALUES (?, ?, ?, ?)" +
+            var query = "INSERT INTO user_sessions (session_id, user_id, user_agent, ip_address, created_at, valid_to)" +
+                        "VALUES (?, ?, ?, ?, ?, ?)" +
                         "ON CONFLICT (session_id)" +
                         "DO UPDATE SET user_id = ?, created_at = ?, valid_to = ?";
 
@@ -46,11 +48,13 @@ public class UserSessionsDAOImpl implements UserSessionsDAO {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setObject(1, userSession.sessionId());
             preparedStatement.setObject(2, userSession.userId());
-            preparedStatement.setObject(3, createdAt);
-            preparedStatement.setObject(4, validTo);
-            preparedStatement.setObject(5, userSession.userId());
-            preparedStatement.setObject(6, createdAt);
-            preparedStatement.setObject(7, validTo);
+            preparedStatement.setObject(3, userSession.userAgent());
+            preparedStatement.setObject(4, userSession.ipAddress());
+            preparedStatement.setObject(5, createdAt);
+            preparedStatement.setObject(6, validTo);
+            preparedStatement.setObject(7, userSession.userId());
+            preparedStatement.setObject(8, createdAt);
+            preparedStatement.setObject(9, validTo);
             preparedStatement.executeUpdate();
         }
     }
