@@ -102,8 +102,10 @@ class UsersControllerTest {
                 assertThat(cookie).contains("HttpOnly");
                 assertThat(cookie).contains("SameSite=Strict");
                 assertThat(cookie).contains("Path=/");
+
                 assert response.body() != null;
-                assertThat(response.body().string()).contains("sessionId");
+                var userSessionResponse = objectMapper.readValue(response.body().string(), UserSessionResponse.class);
+                assertThat(userSessionResponse.sessionId()).isNotBlank();
             }
         });
     }
@@ -152,8 +154,12 @@ class UsersControllerTest {
 
                 try (var logoutResponse = client.request(logoutRequest)) {
                     assertThat(logoutResponse.code()).isEqualTo(200);
+
                     assert logoutResponse.body() != null;
-                    assertThat(logoutResponse.body().string()).contains("sessionId");
+
+                    var expectedResponse = new UserSessionResponse(sessionId);
+                    var actualResponse = objectMapper.readValue(logoutResponse.body().string(), UserSessionResponse.class);
+                    assertThat(actualResponse).isEqualTo(expectedResponse);
 
                     UserSession userSession = userSessionsDAOMock.find(UUID.fromString(sessionId));
                     assertThat(userSession.validTo().isBefore(Instant.now())).isTrue();

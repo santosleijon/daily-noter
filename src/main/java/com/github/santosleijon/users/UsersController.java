@@ -51,7 +51,7 @@ public class UsersController {
             userSessionsDAO.invalidateOldSessions(userDetailsForAuthentication.userId());
 
             ctx.cookie(createSessionCookie(userSession));
-            ctx.result("{ \"sessionId\": \"" + userSession.sessionId().toString() + "\" }");
+            ctx.json(new UserSessionResponse(userSession.sessionId()));
             ctx.status(HttpStatus.OK);
         } catch (InvalidUserCredentialsException e) {
             ctx.json(new ErrorResponse("Invalid user credentials"));
@@ -75,7 +75,7 @@ public class UsersController {
             UserSession invalidatedUserSession = userSession.withValidTo(Instant.now());
             userSessionsDAO.upsert(invalidatedUserSession);
             ctx.removeCookie("sessionId");
-            ctx.result("{ \"sessionId\": \"" + sessionId + "\" }");
+            ctx.json(new UserSessionResponse(sessionId));
         } catch (UserSessionNotFound e) {
             ctx.json(new ErrorResponse(e.getMessage()));
             ctx.status(HttpStatus.BAD_REQUEST);
