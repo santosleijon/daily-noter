@@ -13,7 +13,7 @@ public class UsersDAOMock implements UsersDAO {
     UserDetailsForAuthentication userDetailsForExistingUser = new UserDetailsForAuthentication(
             UUID.randomUUID(),
             "user@example.com",
-            "$argon2id$v=19$m=15360,t=2,p=1$DVrE9DwcCKl7/w0skGW4tN+ZOIN6JX5xjvevGTcP1IEATXd050a55/WBEtWVtwB1TfydbVO5ty7uP3FfkT/8fw$fLsItA8hW0R7kg1f73ubPBzt7P2pn7rXdm9IclbCNR4",
+            "$argon2id$v=19$m=15360,t=3,p=1$s0dJtvaK3gQHBi+gAmCbJmuUQTcFnR8XRYodPA7GnNvOKdjMCrF+AzXPBmcfebL2vgQmlC/kN2wPXHSn8L1BQg$pSih8HiG40aJJiskrfR7gS2cAjFusjuPJhJ4GXmjLdQ",
             Instant.now());
 
     @Override
