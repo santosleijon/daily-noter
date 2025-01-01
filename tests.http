@@ -1,0 +1,8 @@
+### Login
+POST http://localhost:8080/api/users/login
+Content-Type: application/x-www-form-urlencoded
+
+email=user@example.com&password=my-secret-password
+
+### Logout
+POST http://localhost:8080/api/users/logout
