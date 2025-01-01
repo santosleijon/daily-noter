@@ -3,6 +3,7 @@ package com.github.santosleijon.users;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.santosleijon.Application;
 import com.github.santosleijon.common.EnvironmentVariableReader;
+import com.github.santosleijon.common.ErrorResponse;
 import common.EnvironmentVariableReaderMock;
 import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
@@ -42,8 +43,13 @@ class UsersControllerTest {
         JavalinTest.test(getJavalinAppUnderTest(), (server, client) -> {
             try (var response = client.post("/api/users/login")) {
                 assertThat(response.code()).isEqualTo(400);
+
                 assert response.body() != null;
-                assertThat(response.body().string()).isEqualTo("{ \"error\": \"User credentials missing\" }");
+
+                var expectedResponse = new ErrorResponse("User credentials missing");
+                var actualResponse = objectMapper.readValue(response.body().string(), ErrorResponse.class);
+
+                assertThat(actualResponse).isEqualTo(expectedResponse);
             }
         });
     }
@@ -55,8 +61,13 @@ class UsersControllerTest {
 
             try (var response = client.request(request)) {
                 assertThat(response.code()).isEqualTo(401);
+
                 assert response.body() != null;
-                assertThat(response.body().string()).isEqualTo("{ \"error\": \"Invalid user credentials\" }");
+
+                var expectedResponse = new ErrorResponse("Invalid user credentials");
+                var actualResponse = objectMapper.readValue(response.body().string(), ErrorResponse.class);
+
+                assertThat(actualResponse).isEqualTo(expectedResponse);
             }
         });
     }
@@ -68,14 +79,19 @@ class UsersControllerTest {
 
             try (var response = client.request(request)) {
                 assertThat(response.code()).isEqualTo(401);
+
                 assert response.body() != null;
-                assertThat(response.body().string()).isEqualTo("{ \"error\": \"Invalid user credentials\" }");
+
+                var expectedResponse = new ErrorResponse("Invalid user credentials");
+                var actualResponse = objectMapper.readValue(response.body().string(), ErrorResponse.class);
+
+                assertThat(actualResponse).isEqualTo(expectedResponse);
             }
         });
     }
 
     @Test
-    public void loginShouldReturnSuccessWhenValidUserCredentialsAreSubmitted() {
+    public void loginShouldCreateUserSessionWhenValidUserCredentialsAreSubmitted() {
         JavalinTest.test(getJavalinAppUnderTest(), (server, client) -> {
             var request = createValidLoginRequest(server);
 

@@ -26,7 +26,7 @@ public class UsersController {
         var password = ctx.formParam("password");
 
         if (email == null || email.isBlank() || password == null || password.isBlank()) {
-            ctx.result(new ErrorResponse("User credentials missing").toJson());
+            ctx.json(new ErrorResponse("User credentials missing"));
             ctx.status(HttpStatus.BAD_REQUEST);
             return;
         }
@@ -54,7 +54,7 @@ public class UsersController {
             ctx.result("{ \"sessionId\": \"" + userSession.sessionId().toString() + "\" }");
             ctx.status(HttpStatus.OK);
         } catch (InvalidUserCredentialsException e) {
-            ctx.result(new ErrorResponse("Invalid user credentials").toJson());
+            ctx.json(new ErrorResponse("Invalid user credentials"));
             ctx.status(HttpStatus.UNAUTHORIZED);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -65,7 +65,7 @@ public class UsersController {
         var sessionId = ctx.cookie("sessionId");
 
         if (sessionId == null || sessionId.isBlank()) {
-            ctx.result(new ErrorResponse("User session cookie missing").toJson());
+            ctx.json(new ErrorResponse("User session cookie missing"));
             ctx.status(HttpStatus.UNAUTHORIZED);
             return;
         }
@@ -77,7 +77,7 @@ public class UsersController {
             ctx.removeCookie("sessionId");
             ctx.result("{ \"sessionId\": \"" + sessionId + "\" }");
         } catch (UserSessionNotFound e) {
-            ctx.result(new ErrorResponse(e.getMessage()).toJson());
+            ctx.json(new ErrorResponse(e.getMessage()));
             ctx.status(HttpStatus.BAD_REQUEST);
         } catch (SQLException e) {
             throw new RuntimeException(e);
