@@ -14,7 +14,7 @@ public class UserSessionsDAOImpl implements UserSessionsDAO {
     @Override
     public UserSession find(UUID sessionId) throws SQLException, UserSessionNotFound {
         try (var connection = DatabaseConnection.getConnection()) {
-            var query = "SELECT session_id, user_id, created_at, valid_to FROM user_sessions WHERE session_id = ? LIMIT 1";
+            var query = "SELECT session_id, user_id, user_agent, ip_address, created_at, valid_to FROM user_sessions WHERE session_id = ? LIMIT 1";
 
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setObject(1, sessionId);
@@ -28,7 +28,7 @@ public class UserSessionsDAOImpl implements UserSessionsDAO {
             String userAgent = resultSet.getString("user_agent");
             String ipAddress = resultSet.getString("ip_address");
             Instant createdAt = TimestampUtil.getInstantFromResultSet(resultSet, "created_at");
-            Instant validTo = TimestampUtil.getInstantFromResultSet(resultSet, "created_at");
+            Instant validTo = TimestampUtil.getInstantFromResultSet(resultSet, "valid_to");
 
             return new UserSession(sessionId, userId, userAgent, ipAddress, createdAt, validTo);
         }

@@ -65,7 +65,7 @@ public class UsersController {
         var sessionId = ctx.cookie("sessionId");
 
         if (sessionId == null || sessionId.isBlank()) {
-            ctx.json(new ErrorResponse("User session cookie missing"));
+            ctx.json(new ErrorResponse("Session cookie missing"));
             ctx.status(HttpStatus.UNAUTHORIZED);
             return;
         }
@@ -84,7 +84,36 @@ public class UsersController {
         }
     }
 
-    // TODO: getCurrentUserSession()
+    public void getCurrentSession(Context ctx) {
+        var sessionId = ctx.cookie("sessionId");
+
+        if (sessionId == null || sessionId.isBlank()) {
+            ctx.json(new ErrorResponse("Session cookie missing"));
+            ctx.status(HttpStatus.BAD_REQUEST);
+            return;
+        }
+
+        try {
+            var session = userSessionsDAO.find(UUID.fromString(sessionId));
+
+            if (session.validTo().isBefore(Instant.now())) {
+                ctx.json(new ErrorResponse("Session has expired"));
+                ctx.status(HttpStatus.UNAUTHORIZED);
+                return;
+            }
+
+            ctx.json(session);
+        } catch (UserSessionNotFound e) {
+            ctx.json(new ErrorResponse(e.getMessage()));
+            ctx.status(HttpStatus.UNAUTHORIZED);
+        } catch (IllegalArgumentException e) {
+            ctx.json(new ErrorResponse("Invalid session ID format"));
+            ctx.status(HttpStatus.BAD_REQUEST);
+        } catch (SQLException e) {
+            ctx.json(new ErrorResponse(e.getMessage()));
+            ctx.status(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     private Cookie createSessionCookie(UserSession userSession) {
         var cookie = new Cookie("sessionId", userSession.sessionId().toString());

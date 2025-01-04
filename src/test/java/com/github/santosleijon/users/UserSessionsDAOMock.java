@@ -16,11 +16,11 @@ public class UserSessionsDAOMock implements UserSessionsDAO {
     public final List<UserSession> userSessions = new ArrayList<>();
 
     @Override
-    public UserSession find(UUID sessionId) {
+    public UserSession find(UUID sessionId) throws UserSessionNotFound {
         return userSessions.stream()
                 .filter(session -> session.sessionId().equals(sessionId))
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(() -> new UserSessionNotFound(sessionId));
     }
 
     @Override

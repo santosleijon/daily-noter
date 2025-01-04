@@ -4,5 +4,38 @@ Content-Type: application/x-www-form-urlencoded
 
 email=user@example.com&password=my-secret-password
 
+> {%
+    client.test("Login succeeded", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+
+### Get current user session after login
+GET http://localhost:8080/api/users/current-session
+
+> {%
+    client.test("Retrieval of valid user session succeeded", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+
 ### Logout
 POST http://localhost:8080/api/users/logout
+
+> {%
+    client.test("Login succeeded", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+
+### Get current user session after login
+GET http://localhost:8080/api/users/current-session
+
+> {%
+    client.test("Retrieval of expired user session succeeded", function() {
+        client.assert(response.status === 400, "Response status is not 400");
+    });
+%}

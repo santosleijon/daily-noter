@@ -1,6 +1,7 @@
 package com.github.santosleijon.users;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.santosleijon.Application;
 import com.github.santosleijon.common.EnvironmentVariableReader;
 import com.github.santosleijon.common.ErrorResponse;
@@ -14,9 +15,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
+import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class UsersControllerTest {
@@ -29,7 +32,7 @@ class UsersControllerTest {
     UserSessionsDAO mockedUserSessionsDAO = Mockito.mock(UserSessionsDAO.class);
     UserSessionsDAOMock userSessionsDAOMock = new UserSessionsDAOMock();
 
-    ObjectMapper objectMapper = new ObjectMapper();
+    ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule()).configure(WRITE_DATES_AS_TIMESTAMPS, false);
 
     @BeforeEach
     public void beforeEach() {
@@ -143,8 +146,8 @@ class UsersControllerTest {
 
             try (var loginResponse = client.request(loginRequest)) {
                 assert loginResponse.body() != null;
-                var jsonResponseBody = objectMapper.readTree(loginResponse.body().string());
-                var sessionId = jsonResponseBody.get("sessionId").asText();
+                var sessionResponse = objectMapper.readValue(loginResponse.body().string(), UserSessionResponse.class);
+                var sessionId = sessionResponse.sessionId();
 
                 var logoutRequest = new Request.Builder()
                         .url("http://localhost:" + server.port() + "/api/users/logout")
@@ -163,6 +166,107 @@ class UsersControllerTest {
 
                     UserSession userSession = userSessionsDAOMock.find(UUID.fromString(sessionId));
                     assertThat(userSession.validTo().isBefore(Instant.now())).isTrue();
+                }
+            }
+        });
+    }
+
+    @Test
+    public void getCurrentSessionShouldReturnErrorIfCookieIsMissing() {
+        JavalinTest.test(getJavalinAppUnderTest(), (server, client) -> {
+            try (var response = client.get("/api/users/current-session")) {
+                assertThat(response.code()).isEqualTo(400);
+
+                assert response.body() != null;
+
+                var expectedResponse = new ErrorResponse("Session cookie missing");
+                var actualResponse = objectMapper.readValue(response.body().string(), ErrorResponse.class);
+
+                assertThat(actualResponse).isEqualTo(expectedResponse);
+            }
+        });
+    }
+
+    @Test
+    public void getCurrentSessionShouldReturnErrorIfSessionIsNotFound() {
+        JavalinTest.test(getJavalinAppUnderTest(), (server, client) -> {
+            var sessionId = UUID.randomUUID();
+
+            var request = new Request.Builder()
+                    .url("http://localhost:" + server.port() + "/api/users/current-session")
+                    .header("Cookie", "sessionId=" + sessionId)
+                    .get()
+                    .build();
+
+            try (var response = client.request(request)) {
+                assert response.body() != null;
+
+                var expectedResponse = new ErrorResponse("Session with ID " + sessionId + " not found");
+                var actualResponse = objectMapper.readValue(response.body().string(), ErrorResponse.class);
+
+                assertThat(actualResponse).isEqualTo(expectedResponse);
+                assertThat(response.code()).isEqualTo(401);
+            }
+        });
+    }
+
+    @Test
+    public void getCurrentSessionShouldReturnErrorIfSessionHasExpired() {
+        JavalinTest.test(getJavalinAppUnderTest(), (server, client) -> {
+            var sessionId = UUID.randomUUID();
+            var userSession = new UserSession(
+                    sessionId,
+                    UUID.randomUUID(),
+                    "user-agent",
+                    "127.0.0.1",
+                    Instant.now(),
+                    Instant.now().minus(Duration.ofSeconds(1))
+            );
+
+            userSessionsDAOMock.userSessions.add(userSession);
+
+            var request = new Request.Builder()
+                    .url("http://localhost:" + server.port() + "/api/users/current-session")
+                    .header("Cookie", "sessionId=" + sessionId)
+                    .get()
+                    .build();
+
+            try (var response = client.request(request)) {
+                assert response.body() != null;
+
+                var expectedResponse = new ErrorResponse("Session has expired");
+                var actualResponse = objectMapper.readValue(response.body().string(), ErrorResponse.class);
+
+                assertThat(actualResponse).isEqualTo(expectedResponse);
+                assertThat(response.code()).isEqualTo(401);
+            }
+        });
+    }
+
+    @Test
+    public void getCurrentSessionShouldReturnSessionIfValid() {
+        JavalinTest.test(getJavalinAppUnderTest(), (server, client) -> {
+            var loginRequest = createValidLoginRequest(server);
+
+            try (var loginResponse = client.request(loginRequest)) {
+                assert loginResponse.body() != null;
+                var sessionResponse = objectMapper.readValue(loginResponse.body().string(), UserSessionResponse.class);
+                var sessionId = sessionResponse.sessionId();
+
+                var getCurrentSessionRequest = new Request.Builder()
+                        .url("http://localhost:" + server.port() + "/api/users/current-session")
+                        .header("Cookie", "sessionId=" + sessionId)
+                        .get()
+                        .build();
+
+                try (var getCurrentSessionResponse = client.request(getCurrentSessionRequest)) {
+                    assertThat(getCurrentSessionResponse.code()).isEqualTo(200);
+
+                    assert getCurrentSessionResponse.body() != null;
+
+                    var expectedResponse = userSessionsDAOMock.find(UUID.fromString(sessionId));
+                    var actualResponse = objectMapper.readValue(getCurrentSessionResponse.body().string(), UserSession.class);
+                    assertThat(actualResponse).isEqualTo(expectedResponse);
                 }
             }
         });
