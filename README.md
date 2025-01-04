@@ -11,6 +11,7 @@ The data is stored in the cloud, making the notes available anywhere on any devi
 * [PostgreSQL](https://www.postgresql.org/) - The world's most advanced open source relational database.
 * [Java 21](https://dev.java/) - The latest LTS release of Java at the time of writing.
 * [Javalin](https://javalin.io/) - Lightweight web framework built on top of Jetty.
+* [Guice](https://github.com/google/guice) - Lightweight dependency injection framework.
 * [Jackson](https://github.com/FasterXML/jackson) - JSON parser for Java.
 * [Password4j](https://password4j.com/) -  Java fluent cryptographic library used for password hashing with the argon2 algorithm.
 * [JUnit Jupiter](https://junit.org/junit5/) - Testing framework for unit tests and integration tests (part of JUnit 5).

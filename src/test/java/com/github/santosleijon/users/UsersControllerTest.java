@@ -273,7 +273,7 @@ class UsersControllerTest {
     }
 
     private Javalin getJavalinAppUnderTest() {
-        return Application.getJavalinApp(mockedUsersDAO, mockedUserSessionsDAO);
+        return Application.getJavalinApp(new UsersController(mockedUsersDAO, mockedUserSessionsDAO));
     }
 
     private static Request createLoginRequest(int serverPort, String email, String password) {

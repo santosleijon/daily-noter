@@ -1,6 +1,8 @@
 package com.github.santosleijon;
 
 import com.github.santosleijon.users.*;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import io.javalin.Javalin;
 import io.javalin.json.JavalinJackson;
 
@@ -11,21 +13,18 @@ public class Application {
     private static final int PORT = 8080;
 
     public static void main(String[] args) {
-        // TODO: Replace with dependency injection using Guice?
-        var usersDAO = new UsersDAOImpl();
-        var userSessionsDAO = new UserSessionsDAOImpl();
+        Injector usersModuleInjector = Guice.createInjector(new UsersModule());
+        UsersController usersController = usersModuleInjector.getInstance(UsersController.class);
 
-        getJavalinApp(usersDAO, userSessionsDAO).start(PORT);
+        getJavalinApp(usersController).start(PORT);
     }
 
-    public static Javalin getJavalinApp(UsersDAO usersDAO, UserSessionsDAO userSessionsDAO) {
+    public static Javalin getJavalinApp(UsersController usersController) {
         var app = Javalin.create(config -> {
             config.jsonMapper(new JavalinJackson().updateMapper(mapper -> {
                 mapper.configure(WRITE_DATES_AS_TIMESTAMPS, false);
             }));
         });
-
-        var usersController = new UsersController(usersDAO, userSessionsDAO);
 
         app.post("/api/users/login", usersController::login);
         app.post("/api/users/logout", usersController::logout);

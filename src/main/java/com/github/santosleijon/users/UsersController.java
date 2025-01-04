@@ -6,16 +6,21 @@ import io.javalin.http.Cookie;
 import io.javalin.http.HttpStatus;
 import io.javalin.http.SameSite;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
+@Singleton
 public class UsersController {
 
-    private final UsersDAO usersDAO;
+    private UsersDAO usersDAO;
+
     private final UserSessionsDAO userSessionsDAO;
 
+    @Inject
     public UsersController(UsersDAO usersDAO, UserSessionsDAO userSessionsDAO) {
         this.usersDAO = usersDAO;
         this.userSessionsDAO = userSessionsDAO;
