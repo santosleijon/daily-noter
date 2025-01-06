@@ -1,5 +1,7 @@
 package com.github.santosleijon.users;
 
+import com.github.santosleijon.users.errors.UserSessionNotFound;
+
 import java.sql.SQLException;
 import java.util.UUID;
 

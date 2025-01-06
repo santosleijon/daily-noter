@@ -1,4 +1,4 @@
-package com.github.santosleijon.users;
+package com.github.santosleijon.users.errors;
 
 import java.util.UUID;
 

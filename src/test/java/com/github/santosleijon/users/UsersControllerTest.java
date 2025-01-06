@@ -1,45 +1,21 @@
 package com.github.santosleijon.users;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.github.santosleijon.Application;
-import com.github.santosleijon.common.EnvironmentVariableReader;
+import com.github.santosleijon.common.ApplicationTest;
 import com.github.santosleijon.common.ErrorResponse;
-import common.EnvironmentVariableReaderMock;
 import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
 import okhttp3.MultipartBody;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
-import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class UsersControllerTest {
-
-    EnvironmentVariableReader mockedEnvironmentVariableReader = Mockito.mock(EnvironmentVariableReader.class);
-    EnvironmentVariableReaderMock environmentVariableReaderMock = new EnvironmentVariableReaderMock();
-
-    UsersDAO mockedUsersDAO = Mockito.mock(UsersDAO.class);
-    UsersDAOMock usersDAOMock = new UsersDAOMock();
-    UserSessionsDAO mockedUserSessionsDAO = Mockito.mock(UserSessionsDAO.class);
-    UserSessionsDAOMock userSessionsDAOMock = new UserSessionsDAOMock();
-
-    ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule()).configure(WRITE_DATES_AS_TIMESTAMPS, false);
-
-    @BeforeEach
-    public void beforeEach() {
-        environmentVariableReaderMock.setupMock(mockedEnvironmentVariableReader);
-        usersDAOMock.setupMock(mockedUsersDAO);
-        userSessionsDAOMock.setupMock(mockedUserSessionsDAO);
-    }
+class UsersControllerTest extends ApplicationTest {
 
     @Test
     public void loginShouldReturnBadRequestIfUserCredentialsAreMissing() {
@@ -125,7 +101,7 @@ class UsersControllerTest {
                 }
             }
 
-            var userId = usersDAOMock.userDetailsForExistingUser.userId();
+            var userId = usersDAOMock.user.userId();
             assertThat(userSessionsDAOMock.getValidSessionsCount(userId)).isEqualTo(3);
 
             // Create a fourth user session that will invalidate the oldest previous one
@@ -270,10 +246,6 @@ class UsersControllerTest {
                 }
             }
         });
-    }
-
-    private Javalin getJavalinAppUnderTest() {
-        return Application.getJavalinApp(new UsersController(mockedUsersDAO, mockedUserSessionsDAO));
     }
 
     private static Request createLoginRequest(int serverPort, String email, String password) {

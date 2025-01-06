@@ -1,5 +1,6 @@
 package com.github.santosleijon.users;
 
+import com.github.santosleijon.users.errors.UserSessionNotFound;
 import org.mockito.stubbing.Answer;
 
 import java.time.Instant;

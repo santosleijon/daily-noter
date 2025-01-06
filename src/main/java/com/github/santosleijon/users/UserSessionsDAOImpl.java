@@ -1,7 +1,8 @@
 package com.github.santosleijon.users;
 
 import com.github.santosleijon.common.DatabaseConnection;
-import com.github.santosleijon.common.TimestampUtil;
+import com.github.santosleijon.common.TimeUtils;
+import com.github.santosleijon.users.errors.UserSessionNotFound;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,8 +28,8 @@ public class UserSessionsDAOImpl implements UserSessionsDAO {
             UUID userId = UUID.fromString(resultSet.getString("user_id"));
             String userAgent = resultSet.getString("user_agent");
             String ipAddress = resultSet.getString("ip_address");
-            Instant createdAt = TimestampUtil.getInstantFromResultSet(resultSet, "created_at");
-            Instant validTo = TimestampUtil.getInstantFromResultSet(resultSet, "valid_to");
+            Instant createdAt = TimeUtils.getInstantFromResultSet(resultSet, "created_at");
+            Instant validTo = TimeUtils.getInstantFromResultSet(resultSet, "valid_to");
 
             return new UserSession(sessionId, userId, userAgent, ipAddress, createdAt, validTo);
         }
@@ -42,8 +43,8 @@ public class UserSessionsDAOImpl implements UserSessionsDAO {
                         "ON CONFLICT (session_id)" +
                         "DO UPDATE SET user_id = ?, created_at = ?, valid_to = ?";
 
-            OffsetDateTime createdAt = TimestampUtil.getOffsetDateTime(userSession.createdAt());
-            OffsetDateTime validTo = TimestampUtil.getOffsetDateTime(userSession.validTo());
+            OffsetDateTime createdAt = TimeUtils.getOffsetDateTime(userSession.createdAt());
+            OffsetDateTime validTo = TimeUtils.getOffsetDateTime(userSession.validTo());
 
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setObject(1, userSession.sessionId());
@@ -65,7 +66,7 @@ public class UserSessionsDAOImpl implements UserSessionsDAO {
                 " (SELECT session_id FROM user_sessions WHERE user_id = ? AND valid_to > ? ORDER BY created_at DESC LIMIT 3)";
 
         try (var connection = DatabaseConnection.getConnection()) {
-            OffsetDateTime now = TimestampUtil.now();
+            OffsetDateTime now = TimeUtils.now();
 
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setObject(1, now);

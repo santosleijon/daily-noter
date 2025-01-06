@@ -1,6 +1,8 @@
 package com.github.santosleijon.users;
 
 import com.github.santosleijon.common.ErrorResponse;
+import com.github.santosleijon.users.errors.InvalidUserCredentialsException;
+import com.github.santosleijon.users.errors.UserSessionNotFound;
 import io.javalin.http.Context;
 import io.javalin.http.Cookie;
 import io.javalin.http.HttpStatus;
@@ -16,7 +18,7 @@ import java.util.UUID;
 @Singleton
 public class UsersController {
 
-    private UsersDAO usersDAO;
+    private final UsersDAO usersDAO;
 
     private final UserSessionsDAO userSessionsDAO;
 

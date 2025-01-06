@@ -1,6 +1,7 @@
 package com.github.santosleijon.users;
 
 import com.github.santosleijon.common.DatabaseConnection;
+import com.github.santosleijon.users.errors.InvalidUserCredentialsException;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

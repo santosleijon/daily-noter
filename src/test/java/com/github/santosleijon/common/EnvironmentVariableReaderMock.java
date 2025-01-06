@@ -1,6 +1,5 @@
-package common;
+package com.github.santosleijon.common;
 
-import com.github.santosleijon.common.EnvironmentVariableReader;
 import org.mockito.Mockito;
 
 public class EnvironmentVariableReaderMock extends EnvironmentVariableReader {
