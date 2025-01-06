@@ -10,11 +10,21 @@ import java.util.List;
 public class TimeUtils {
 
     public static OffsetDateTime getOffsetDateTime(Instant instant) {
+        if (instant == null) {
+            return null;
+        }
+
         return instant.atOffset(ZoneOffset.UTC);
     }
 
     public static Instant getInstantFromResultSet(ResultSet resultSet, String columnName) throws SQLException {
-        return resultSet.getObject(columnName, OffsetDateTime.class).toInstant();
+        var offsetDateTimeFromDb = resultSet.getObject(columnName, OffsetDateTime.class);
+
+        if (offsetDateTimeFromDb == null) {
+            return null;
+        }
+
+        return offsetDateTimeFromDb.toInstant();
     }
 
     public static OffsetDateTime now() {
@@ -34,7 +44,7 @@ public class TimeUtils {
     }
 
     public static LocalDate getLocalDate(String localDateString) {
-        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy-MMM-dd");
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return LocalDate.parse(localDateString, pattern);
     }
 }
