@@ -20,17 +20,15 @@ public class NotesDAOMock implements NotesDAO {
 
     @Override
     public void upsert(Note note) {
-        notes.stream()
-                .filter(existingNote -> existingNote.noteId().equals(note.noteId()))
-                .findFirst()
-                .ifPresentOrElse(
-                        existingNote -> {
-                            notes.removeIf(n -> n.noteId().equals(note.noteId()));
-                            notes.add(note);
-                            notes.sort(Comparator.comparing(Note::createdAt));
-                        },
-                        () -> notes.add(note)
-                );
+        var noteExists = notes.stream().anyMatch(n -> n.noteId().equals(note.noteId()));
+
+        if (noteExists) {
+            notes.removeIf(n -> n.noteId().equals(note.noteId()));
+            notes.add(note);
+            notes.sort(Comparator.comparing(Note::createdAt));
+        } else {
+            notes.add(note);
+        }
     }
 
     @Override
@@ -47,12 +45,10 @@ public class NotesDAOMock implements NotesDAO {
     }
 
     @Override
-    public List<Note> findAndInitializeNotes(UUID userId, LocalDate from, LocalDate to) {
-        List<LocalDate> dates = TimeUtils.getDatesBetween(from, to);
-
-        return dates.stream().map(date ->
-                notes.stream().filter(n -> n.date().equals(date)).findFirst().orElseGet(() -> new Note(userId, date, ""))
-        ).collect(Collectors.toList());
+    public List<Note> find(UUID userId, LocalDate from, LocalDate to) {
+        return notes.stream()
+                .filter(note -> note.userId().equals(userId) && !(note.date().isBefore(from) || note.date().isAfter(to)))
+                .toList();
     }
 
     public void setupMock(NotesDAO mockedNotesDAO) {
@@ -80,10 +76,10 @@ public class NotesDAOMock implements NotesDAO {
                     .find(any(), any());
 
             doAnswer((Answer<List<Note>>) invocationOnMock ->
-                findAndInitializeNotes(invocationOnMock.getArgument(0), invocationOnMock.getArgument(1), invocationOnMock.getArgument(2))
+                find(invocationOnMock.getArgument(0), invocationOnMock.getArgument(1), invocationOnMock.getArgument(2))
             )
                     .when(mockedNotesDAO)
-                    .findAndInitializeNotes(any(), any(), any());
+                    .find(any(), any(), any());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

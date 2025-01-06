@@ -21,6 +21,33 @@ GET http://localhost:8080/api/users/current-session
 %}
 
 
+### Get notes for three days
+GET http://localhost:8080/api/notes/?from=2024-01-01&to=2024-01-03
+
+> {%
+    client.test("Retrieval notes for three days succeeded", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+
+    client.global.set("noteId1", response.body[0].noteId);
+    client.global.set("noteId2", response.body[1].noteId);
+    client.global.set("noteId3", response.body[2].noteId);
+%}
+
+
+### Update a note
+POST http://localhost:8080/api/notes/{{noteId1}}
+Content-Type: application/x-www-form-urlencoded
+
+content=Updated note content.
+
+> {%
+    client.test("Update of note succeeded", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+
 ### Logout
 POST http://localhost:8080/api/users/logout
 

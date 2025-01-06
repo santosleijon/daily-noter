@@ -29,6 +29,7 @@ public class UsersController {
     }
 
     public void login(Context ctx) {
+        // TODO: Use JSON request body instead form param
         var email = ctx.formParam("email");
         var password = ctx.formParam("password");
 

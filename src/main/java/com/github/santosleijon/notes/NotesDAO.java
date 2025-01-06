@@ -11,5 +11,5 @@ public interface NotesDAO {
     void upsert(Note note) throws SQLException;
     void delete(Note note) throws SQLException;
     Note find(UUID noteId, UUID userId) throws NoteNotFound, SQLException;
-    List<Note> findAndInitializeNotes(UUID userId, LocalDate from, LocalDate to) throws SQLException;
+    List<Note> find(UUID userId, LocalDate from, LocalDate to) throws SQLException;
 }

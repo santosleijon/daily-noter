@@ -36,7 +36,7 @@ public class Application {
         app.get("/api/users/current-session", usersController::getCurrentSession);
 
         app.post("/api/notes/{noteId}", notesController::updateNote);
-        app.get("/api/notes", notesController::getNotes);
+        app.get("/api/notes", notesController::getAndInitializeNotes);
 
         return app;
     }

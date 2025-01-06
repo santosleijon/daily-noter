@@ -11,10 +11,8 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class NotesDAOImpl implements NotesDAO {
 
@@ -80,15 +78,7 @@ public class NotesDAOImpl implements NotesDAO {
     }
 
     @Override
-    public List<Note> findAndInitializeNotes(UUID userId, LocalDate from, LocalDate to) throws SQLException {
-        if (from == null || to == null) {
-            throw new IllegalArgumentException("Dates must be non-null");
-        }
-
-        if (from.isAfter(to)) {
-            throw new IllegalArgumentException("'from' date must not be after 'to' date");
-        }
-
+    public List<Note> find(UUID userId, LocalDate from, LocalDate to) throws SQLException {
         var query = "SELECT note_id, user_id, date, content, created_at, updated_at FROM notes WHERE user_id = ? AND date BETWEEN ? AND ?";
 
         var notes = new ArrayList<Note>();
@@ -112,18 +102,6 @@ public class NotesDAOImpl implements NotesDAO {
             }
         }
 
-        var datesThatShouldBeInitialized = TimeUtils.getDatesBetween(from, to);
-
-        for (LocalDate date : datesThatShouldBeInitialized) {
-            if (notes.stream().noneMatch(note -> note.date().equals(date))) {
-                var initializedNote = new Note(userId, date, "");
-                upsert(initializedNote);
-                notes.add(initializedNote);
-            }
-        }
-
-        return notes.stream()
-                .sorted(Comparator.comparing(Note::date).reversed())
-                .collect(Collectors.toList());
+        return notes;
     }
 }
