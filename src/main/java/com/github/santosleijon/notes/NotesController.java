@@ -28,35 +28,6 @@ public class NotesController {
         this.userAuthenticator = userAuthenticator;
     }
 
-    public void updateNote(Context ctx) {
-        try {
-            var userId = userAuthenticator.authenticateUserAndGetUserId(ctx);
-
-            var noteId = UUID.fromString(ctx.pathParam("noteId"));
-
-            var note = notesDAO.find(noteId, userId);
-
-            // TODO: Use JSON request body instead form param
-            var updatedNoteContent = ctx.formParam("content");
-
-            var updatedNote = note.withContent(updatedNoteContent).withUpdatedAt(Instant.now());
-
-            notesDAO.upsert(updatedNote);
-        } catch (IllegalArgumentException e) {
-            ctx.json(new ErrorResponse("Invalid content ID format"));
-            ctx.status(HttpStatus.BAD_REQUEST);
-        } catch (NoteNotFound e) {
-            ctx.json(new ErrorResponse(e.getMessage()));
-            ctx.status(HttpStatus.BAD_REQUEST);
-        } catch (UnauthorizedUserException e) {
-            ctx.json(new ErrorResponse(e.getMessage()));
-            ctx.status(HttpStatus.UNAUTHORIZED);
-        } catch (Exception e) {
-            ctx.json(new ErrorResponse("Internal server error"));
-            ctx.status(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     public void getAndInitializeNotes(Context ctx) {
         try {
             var userId = userAuthenticator.authenticateUserAndGetUserId(ctx);
@@ -103,6 +74,59 @@ public class NotesController {
         } catch (IllegalArgumentException e) {
             ctx.json(new ErrorResponse(e.getMessage()));
             ctx.status(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            ctx.json(new ErrorResponse("Internal server error"));
+            ctx.status(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public void updateNote(Context ctx) {
+        try {
+            var userId = userAuthenticator.authenticateUserAndGetUserId(ctx);
+
+            var noteId = UUID.fromString(ctx.pathParam("noteId"));
+
+            var note = notesDAO.find(noteId, userId);
+
+            // TODO: Use JSON request body instead form param
+            var updatedNoteContent = ctx.formParam("content");
+
+            var updatedNote = note.withContent(updatedNoteContent).withUpdatedAt(Instant.now());
+
+            notesDAO.upsert(updatedNote);
+        } catch (IllegalArgumentException e) {
+            ctx.json(new ErrorResponse("Invalid content ID format"));
+            ctx.status(HttpStatus.BAD_REQUEST);
+        } catch (NoteNotFound e) {
+            ctx.json(new ErrorResponse(e.getMessage()));
+            ctx.status(HttpStatus.BAD_REQUEST);
+        } catch (UnauthorizedUserException e) {
+            ctx.json(new ErrorResponse(e.getMessage()));
+            ctx.status(HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            ctx.json(new ErrorResponse("Internal server error"));
+            ctx.status(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public void deleteNote(Context ctx) {
+        try {
+            var userId = userAuthenticator.authenticateUserAndGetUserId(ctx);
+
+            var noteId = UUID.fromString(ctx.pathParam("noteId"));
+
+            var note = notesDAO.find(noteId, userId);
+
+            notesDAO.delete(note);
+        } catch (IllegalArgumentException e) {
+            ctx.json(new ErrorResponse("Invalid content ID format"));
+            ctx.status(HttpStatus.BAD_REQUEST);
+        } catch (NoteNotFound e) {
+            ctx.json(new ErrorResponse(e.getMessage()));
+            ctx.status(HttpStatus.BAD_REQUEST);
+        } catch (UnauthorizedUserException e) {
+            ctx.json(new ErrorResponse(e.getMessage()));
+            ctx.status(HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
             ctx.json(new ErrorResponse("Internal server error"));
             ctx.status(HttpStatus.INTERNAL_SERVER_ERROR);

@@ -27,6 +27,7 @@ GET http://localhost:8080/api/notes/?from=2024-01-01&to=2024-01-03
 > {%
     client.test("Retrieval notes for three days succeeded", function() {
         client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body.length === 3, 'Number of retrieved notes were not 3')
     });
 
     client.global.set("noteId1", response.body[0].noteId);
@@ -43,6 +44,36 @@ content=Updated note content.
 
 > {%
     client.test("Update of note succeeded", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+
+### Delete note 1
+DELETE http://localhost:8080/api/notes/{{noteId1}}
+
+> {%
+    client.test("Deletion of note succeeded", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+
+### Delete note 2
+DELETE http://localhost:8080/api/notes/{{noteId2}}
+
+> {%
+    client.test("Deletion of note succeeded", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+
+### Delete note 3
+DELETE http://localhost:8080/api/notes/{{noteId3}}
+
+> {%
+    client.test("Deletion of note succeeded", function() {
         client.assert(response.status === 200, "Response status is not 200");
     });
 %}

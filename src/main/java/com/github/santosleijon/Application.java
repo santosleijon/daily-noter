@@ -35,8 +35,9 @@ public class Application {
         app.post("/api/users/logout", usersController::logout);
         app.get("/api/users/current-session", usersController::getCurrentSession);
 
-        app.post("/api/notes/{noteId}", notesController::updateNote);
         app.get("/api/notes", notesController::getAndInitializeNotes);
+        app.post("/api/notes/{noteId}", notesController::updateNote);
+        app.delete("/api/notes/{noteId}", notesController::deleteNote);
 
         return app;
     }
