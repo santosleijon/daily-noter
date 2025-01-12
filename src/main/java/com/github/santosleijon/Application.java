@@ -25,11 +25,9 @@ public class Application {
     }
 
     public static Javalin getJavalinApp(UsersController usersController, NotesController notesController) {
-        var app = Javalin.create(config -> {
-            config.jsonMapper(new JavalinJackson().updateMapper(mapper -> {
-                mapper.configure(WRITE_DATES_AS_TIMESTAMPS, false);
-            }));
-        });
+        var app = Javalin.create(config -> config.jsonMapper(
+                new JavalinJackson().updateMapper(mapper -> mapper.configure(WRITE_DATES_AS_TIMESTAMPS, false))
+        ));
 
         app.post("/api/users/login", usersController::login);
         app.post("/api/users/logout", usersController::logout);

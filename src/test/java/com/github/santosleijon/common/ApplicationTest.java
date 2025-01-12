@@ -7,15 +7,16 @@ import com.github.santosleijon.notes.NotesController;
 import com.github.santosleijon.notes.NotesDAO;
 import com.github.santosleijon.notes.NotesDAOMock;
 import com.github.santosleijon.users.*;
+import com.github.santosleijon.users.dto.LoginRequestDTO;
 import io.javalin.Javalin;
 import io.javalin.testtools.HttpClient;
-import okhttp3.MultipartBody;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
@@ -53,15 +54,15 @@ public class ApplicationTest {
     }
 
     protected UUID login(Javalin server, HttpClient client) throws IOException {
-        var requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("email", "user@example.com")
-                .addFormDataPart("password", "my-secret-password")
-                .build();
+        var loginRequestDTO = new LoginRequestDTO("user@example.com", "my-secret-password");
+
+        var requestJson = objectMapper.writeValueAsString(loginRequestDTO);
+
+        var requestBody = RequestBody.create(requestJson.getBytes(StandardCharsets.UTF_8));
 
         var request = new Request.Builder()
                 .url("http://localhost:" + server.port() + "/api/users/login")
-                .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                .addHeader("Content-Type", "application/json")
                 .post(requestBody)
                 .build();
 

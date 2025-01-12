@@ -1,14 +1,16 @@
 package com.github.santosleijon.users;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.santosleijon.common.ApplicationTest;
 import com.github.santosleijon.common.ErrorResponse;
+import com.github.santosleijon.users.dto.LoginRequestDTO;
 import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
-import okhttp3.MultipartBody;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
@@ -248,21 +250,21 @@ class UsersControllerTest extends ApplicationTest {
         });
     }
 
-    private static Request createLoginRequest(int serverPort, String email, String password) {
-        var requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("email", email)
-                .addFormDataPart("password", password)
-                .build();
+    private Request createLoginRequest(int serverPort, String email, String password) throws JsonProcessingException {
+        var loginRequestDTO = new LoginRequestDTO(email, password);
+
+        var requestJson = objectMapper.writeValueAsString(loginRequestDTO);
+
+        var requestBody = RequestBody.create(requestJson.getBytes(StandardCharsets.UTF_8));
 
         return new Request.Builder()
                 .url("http://localhost:" + serverPort + "/api/users/login")
-                .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                .addHeader("Content-Type", "application/json")
                 .post(requestBody)
                 .build();
     }
 
-    private static Request createValidLoginRequest(Javalin server) {
+    private Request createValidLoginRequest(Javalin server) throws JsonProcessingException {
         return createLoginRequest(server.port(), "user@example.com", "my-secret-password");
     }
 }

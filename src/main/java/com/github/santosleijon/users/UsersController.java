@@ -1,6 +1,7 @@
 package com.github.santosleijon.users;
 
 import com.github.santosleijon.common.ErrorResponse;
+import com.github.santosleijon.users.dto.LoginRequestDTO;
 import com.github.santosleijon.users.errors.InvalidUserCredentialsException;
 import com.github.santosleijon.users.errors.UserSessionNotFound;
 import io.javalin.http.Context;
@@ -29,9 +30,18 @@ public class UsersController {
     }
 
     public void login(Context ctx) {
-        // TODO: Use JSON request body instead form param
-        var email = ctx.formParam("email");
-        var password = ctx.formParam("password");
+        LoginRequestDTO requestDTO;
+
+        try {
+            requestDTO = ctx.bodyAsClass(LoginRequestDTO.class);
+        } catch (Exception e) {
+            ctx.json(new ErrorResponse("User credentials missing"));
+            ctx.status(HttpStatus.BAD_REQUEST);
+            return;
+        }
+
+        var email = requestDTO.email();
+        var password = requestDTO.password();
 
         if (email == null || email.isBlank() || password == null || password.isBlank()) {
             ctx.json(new ErrorResponse("User credentials missing"));
