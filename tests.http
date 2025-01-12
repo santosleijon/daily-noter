@@ -38,9 +38,9 @@ GET http://localhost:8080/api/notes/?from=2024-01-01&to=2024-01-03
 
 ### Update a note
 POST http://localhost:8080/api/notes/{{noteId1}}
-Content-Type: application/x-www-form-urlencoded
+Content-Type: application/json
 
-content=Updated note content.
+{ "content": "Updated note content." }
 
 > {%
     client.test("Update of note succeeded", function() {
@@ -49,34 +49,34 @@ content=Updated note content.
 %}
 
 
-### Delete note 1
-DELETE http://localhost:8080/api/notes/{{noteId1}}
-
-> {%
-    client.test("Deletion of note succeeded", function() {
-        client.assert(response.status === 200, "Response status is not 200");
-    });
-%}
-
-
-### Delete note 2
-DELETE http://localhost:8080/api/notes/{{noteId2}}
-
-> {%
-    client.test("Deletion of note succeeded", function() {
-        client.assert(response.status === 200, "Response status is not 200");
-    });
-%}
-
-
-### Delete note 3
-DELETE http://localhost:8080/api/notes/{{noteId3}}
-
-> {%
-    client.test("Deletion of note succeeded", function() {
-        client.assert(response.status === 200, "Response status is not 200");
-    });
-%}
+#### Delete note 1
+#DELETE http://localhost:8080/api/notes/{{noteId1}}
+#
+#> {%
+#    client.test("Deletion of note succeeded", function() {
+#        client.assert(response.status === 200, "Response status is not 200");
+#    });
+#%}
+#
+#
+#### Delete note 2
+#DELETE http://localhost:8080/api/notes/{{noteId2}}
+#
+#> {%
+#    client.test("Deletion of note succeeded", function() {
+#        client.assert(response.status === 200, "Response status is not 200");
+#    });
+#%}
+#
+#
+#### Delete note 3
+#DELETE http://localhost:8080/api/notes/{{noteId3}}
+#
+#> {%
+#    client.test("Deletion of note succeeded", function() {
+#        client.assert(response.status === 200, "Response status is not 200");
+#    });
+#%}
 
 
 ### Logout

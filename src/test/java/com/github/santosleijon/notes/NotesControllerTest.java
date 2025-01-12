@@ -1,15 +1,18 @@
 package com.github.santosleijon.notes;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.santosleijon.common.ApplicationTest;
 import com.github.santosleijon.common.ErrorResponse;
 import com.github.santosleijon.common.TimeUtils;
+import com.github.santosleijon.notes.dto.UpdateNoteDTO;
 import com.github.santosleijon.notes.errors.NoteNotFound;
 import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
-import okhttp3.MultipartBody;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.UUID;
@@ -288,24 +291,25 @@ class NotesControllerTest extends ApplicationTest {
         });
     }
 
-    private Request createUpdateNoteRequest(Javalin server) {
+    private Request createUpdateNoteRequest(Javalin server) throws JsonProcessingException {
         return createUpdateNoteRequest(server, UUID.randomUUID(), "Note content.", null);
     }
 
-    private Request createUpdateNoteRequest(Javalin server, UUID sessionId) {
+    private Request createUpdateNoteRequest(Javalin server, UUID sessionId) throws JsonProcessingException {
         return createUpdateNoteRequest(server, UUID.randomUUID(), "Note content.", sessionId);
     }
 
-    private Request createUpdateNoteRequest(Javalin server, UUID noteId, String noteContent, UUID sessionId) {
-        var requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("content", noteContent)
-                .build();
+    private Request createUpdateNoteRequest(Javalin server, UUID noteId, String noteContent, UUID sessionId) throws JsonProcessingException {
+        var requestDTO = new UpdateNoteDTO(noteContent);
+
+        var requestJson = objectMapper.writeValueAsString(requestDTO);
+
+        var requestBody = RequestBody.create(requestJson.getBytes(StandardCharsets.UTF_8));
 
         if (sessionId != null) {
             return new Request.Builder()
                     .url("http://localhost:" + server.port() + "/api/notes/" + noteId.toString())
-                    .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                    .addHeader("Content-Type", "application/json")
                     .addHeader("Cookie", "sessionId=" + sessionId)
                     .post(requestBody)
                     .build();

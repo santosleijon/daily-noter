@@ -2,6 +2,7 @@ package com.github.santosleijon.notes;
 
 import com.github.santosleijon.common.ErrorResponse;
 import com.github.santosleijon.common.TimeUtils;
+import com.github.santosleijon.notes.dto.UpdateNoteDTO;
 import com.github.santosleijon.notes.errors.NoteNotFound;
 import com.github.santosleijon.users.UserAuthenticator;
 import com.github.santosleijon.users.errors.UnauthorizedUserException;
@@ -82,16 +83,23 @@ public class NotesController {
 
     public void updateNote(Context ctx) {
         try {
+            UpdateNoteDTO requestDTO;
+
+            try {
+                requestDTO = ctx.bodyAsClass(UpdateNoteDTO.class);
+            } catch (Exception e) {
+                ctx.json(new ErrorResponse("Invalid request body"));
+                ctx.status(HttpStatus.BAD_REQUEST);
+                return;
+            }
+
             var userId = userAuthenticator.authenticateUserAndGetUserId(ctx);
 
             var noteId = UUID.fromString(ctx.pathParam("noteId"));
 
             var note = notesDAO.find(noteId, userId);
 
-            // TODO: Use JSON request body instead form param
-            var updatedNoteContent = ctx.formParam("content");
-
-            var updatedNote = note.withContent(updatedNoteContent).withUpdatedAt(Instant.now());
+            var updatedNote = note.withContent(requestDTO.content()).withUpdatedAt(Instant.now());
 
             notesDAO.upsert(updatedNote);
         } catch (IllegalArgumentException e) {
