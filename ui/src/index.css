@@ -2,3 +2,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+h2 {
+    @apply text-2xl font-semibold mb-4;
+}
+
+button[type=submit] {
+    @apply p-4 text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400;
+}
