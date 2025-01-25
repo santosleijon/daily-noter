@@ -13,10 +13,15 @@ const App = () => {
     setUserEmail(email);
   }
 
+  function handleLogOut() {
+    setIsLoggedIn(false);
+    setUserEmail('');
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <Navigation />
+      <Navigation isLoggedIn={isLoggedIn} onLogOut={handleLogOut} />
       <main className="flex-grow container mx-auto px-4 py-8">
         <div className="bg-white rounded-lg shadow-md p-6">
           {isLoggedIn ? (
