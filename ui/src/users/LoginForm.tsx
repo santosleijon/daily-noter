@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
+import LoadableSubmitButton from '../common/LoadableSubmitButton.tsx';
 
 interface LoginFormProps {
-  onLoginSuccess: (email: string) => void;
+  onLoginSuccess: (email: string) => Promise<void>;
 }
 
 const LoginForm = (props: LoginFormProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loginIsLoading, setLoginIsLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    props.onLoginSuccess(email);
+    setLoginIsLoading(true);
+    await props.onLoginSuccess(email);
+    setLoginIsLoading(false);
   };
 
   return (
@@ -43,9 +47,7 @@ const LoginForm = (props: LoginFormProps) => {
             className="w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 border-gray-300"
           />
         </div>
-        <button type="submit">
-          Login
-        </button>
+        <LoadableSubmitButton isLoading={loginIsLoading} text="Login" />
       </form>
     </>
   );
