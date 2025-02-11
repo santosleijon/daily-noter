@@ -25,9 +25,17 @@ public class Application {
     }
 
     public static Javalin getJavalinApp(UsersController usersController, NotesController notesController) {
-        var app = Javalin.create(config -> config.jsonMapper(
-                new JavalinJackson().updateMapper(mapper -> mapper.configure(WRITE_DATES_AS_TIMESTAMPS, false))
-        ));
+        var app = Javalin.create(config -> {
+            config.jsonMapper(
+                    new JavalinJackson().updateMapper(mapper -> mapper.configure(WRITE_DATES_AS_TIMESTAMPS, false))
+            );
+
+            config.bundledPlugins.enableCors(cors -> {
+                cors.addRule(it -> {
+                    it.allowHost("http://localhost:5173");
+                });
+            });
+        });
 
         app.post("/api/users/login", usersController::login);
         app.post("/api/users/logout", usersController::logout);
