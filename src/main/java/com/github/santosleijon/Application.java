@@ -32,7 +32,8 @@ public class Application {
 
             config.bundledPlugins.enableCors(cors -> {
                 cors.addRule(it -> {
-                    it.allowHost("http://localhost:5173");
+                    it.allowHost("http://localhost:5173"); // TODO: Define with environment variable
+                    it.allowCredentials = true;
                 });
             });
         });

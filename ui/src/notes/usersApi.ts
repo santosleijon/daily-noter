@@ -9,6 +9,7 @@ const usersApi = {
 
     const response = await fetch(`${baseUrl}/login`, {
       method: 'POST',
+      credentials: "include",
       headers: {
         'Accept': '*/*',
         'Content-Type': 'application/json'
@@ -18,6 +19,20 @@ const usersApi = {
 
     if (!response.ok) {
       throw new Error(`Failed to login (HTTP status = ${response.status})`)
+    }
+  },
+
+  async logout() {
+    const response = await fetch(`${baseUrl}/logout`, {
+      method: 'POST',
+      credentials: "include",
+      headers: {
+        'Accept': '*/*',
+      },
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to logout (HTTP status = ${response.status})`)
     }
   }
 }
