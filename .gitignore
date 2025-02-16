@@ -36,3 +36,4 @@ build/
 
 ### Project specific ###
 /db/migrations/03_insert_user.sql
+/ops/docs.md
