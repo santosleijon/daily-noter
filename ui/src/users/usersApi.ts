@@ -1,4 +1,4 @@
-const baseUrl = `http://localhost:8080/api/users`
+const baseUrl = `${import.meta.env.VITE_API_URL}/users`
 
 const usersApi = {
   async login(email: string, password: string) {
