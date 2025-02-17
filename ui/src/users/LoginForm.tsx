@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import LoadableSubmitButton from '../common/LoadableSubmitButton.tsx';
-import usersApi from '../notes/usersApi.ts';
+import usersApi from './usersApi.ts';
 import ErrorAlert from '../common/ErrorAlert.tsx';
 
 interface LoginFormProps {

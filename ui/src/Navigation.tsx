@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import usersApi from './notes/usersApi.ts';
+import usersApi from './users/usersApi.ts';
 import LoadingSpinner from './common/LoadingSpinner.tsx';
 
 interface NavigationProps {
