@@ -9,4 +9,4 @@ CREATE TABLE IF NOT EXISTS notes (
 );
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE notes TO daily_noter;
 CREATE INDEX notes_user_id_idx ON notes(user_id);
-CREATE INDEX notes_date_idx ON notes(date);
+CREATE UNIQUE INDEX notes_date_idx ON notes(date);
