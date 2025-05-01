@@ -28,6 +28,10 @@ const notesApi = {
       updatedAt: item.updatedAt ? new Date(item.updatedAt) : null
     }));
   },
+
+  async updateNote(_: Note): Promise<void> {
+
+  }
 }
 
 export default notesApi;

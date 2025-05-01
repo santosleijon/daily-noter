@@ -1,9 +1,9 @@
 import Note from './Note.ts';
-import React, { useEffect, useState } from 'react';
-import LoadableSubmitButton from '../common/LoadableSubmitButton.tsx';
+import { useEffect, useState } from 'react';
 import notesApi from './notesApi.ts';
 import ErrorAlert from '../common/ErrorAlert.tsx';
 import LoadingSpinner from '../common/LoadingSpinner.tsx';
+import NoteComponent from './NoteComponent.tsx';
 
 interface NotesProps {
 }
@@ -13,11 +13,22 @@ const Notes = (_: NotesProps) => {
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  const getTodaysDate = (): string => {
+    const date = new Date();
+    return date.toISOString().split('T')[0];
+  }
+
+  const getDateDaysAgo = (n: number): string => {
+    const date = new Date();
+    date.setDate(date.getDate() - Math.abs(n));
+    return date.toISOString().split('T')[0];
+  }
+
   useEffect(() => {
     const fetchNotes = async () => {
       try {
         setIsLoading(true);
-        const retrievedNotes = await notesApi.getNotes("2025-01-01", "2025-01-03"); // TODO: Use today's date
+        const retrievedNotes = await notesApi.getNotes(getDateDaysAgo(2), getTodaysDate());
         setNotes(retrievedNotes);
         setIsLoading(false);
       } catch (e) {
@@ -31,55 +42,16 @@ const Notes = (_: NotesProps) => {
     void fetchNotes();
   }, []);
 
-  async function handleSaveNote(_: Note) {
-    // TODO: Make API call to save note
+  async function handleSaveNote(note: Note) {
+    notesApi.updateNote(note);
   }
 
   return <>
     <h2>Your daily notes</h2>
-    {notes.map((note: Note) => <NoteComponent note={note} onSave={handleSaveNote} key={note.noteId} />)}
-    <ErrorAlert errorMessage={error} />
     {isLoading && <LoadingSpinner />}
+    <ErrorAlert errorMessage={error} />
+    {notes.map((note: Note) => <NoteComponent note={note} onSave={handleSaveNote} key={note.noteId} />)}
   </>;
-}
-
-interface NoteProps {
-  note: Note;
-  onSave: (note: Note) => Promise<void>;
-  key: string
-}
-
-const NoteComponent = ({ note, onSave }: NoteProps) => {
-  const [content, setContent] = useState(note.content);
-  const [saveIsLoading, setSaveIsLoading] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSaveIsLoading(true);
-    await onSave({...note, content: content});
-    setSaveIsLoading(false);
-  };
-
-  console.log("note.createdAt", typeof note.createdAt);
-
-  return (
-    <div>
-      <div className="mt-8 flex items-center">
-        <h3>{note.date}</h3>
-        <div className="text-xs ml-2 mb-1 text-cyan-800">
-          Created {note.createdAt.toISOString()}{note.updatedAt && <>, updated {note.updatedAt.toISOString()}</>}
-        </div>
-      </div>
-      <form onSubmit={handleSubmit}>
-        <textarea
-          className="block mb-3 p-2 w-full text-sm text-gray-900 rounded border-solid field-sizing-content overflow-hidden"
-          rows={5}
-          onChange={(e) => setContent(e.target.value)}
-          defaultValue={note.content} />
-        <LoadableSubmitButton isLoading={saveIsLoading} text="Save" />
-      </form>
-    </div>
-  )
 }
 
 export default Notes;
