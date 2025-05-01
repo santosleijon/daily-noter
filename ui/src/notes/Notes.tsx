@@ -30,20 +30,25 @@ const Notes = (_: NotesProps) => {
         setIsLoading(true);
         const retrievedNotes = await notesApi.getNotes(getDateDaysAgo(2), getTodaysDate());
         setNotes(retrievedNotes);
-        setIsLoading(false);
       } catch (e) {
         const errorMessage = (e as Error).message;
-        setError(errorMessage)
-        setIsLoading(false);
-        return;
+        setError(errorMessage);
       }
-    }
+      setIsLoading(false);
+    };
 
     void fetchNotes();
   }, []);
 
   async function handleSaveNote(note: Note) {
-    notesApi.updateNote(note);
+    try {
+      setIsLoading(true);
+      await notesApi.updateNote(note);
+    } catch (e) {
+      const errorMessage = (e as Error).message;
+      setError(errorMessage);
+    }
+    setIsLoading(false);
   }
 
   return <>

@@ -29,8 +29,24 @@ const notesApi = {
     }));
   },
 
-  async updateNote(_: Note): Promise<void> {
+  async updateNote(note: Note): Promise<void> {
+    const payload = {
+      content: note.content,
+    }
 
+    const response = await fetch(`${baseUrl}/${note.noteId}`, {
+      method: 'POST',
+      credentials: "include",
+      headers: {
+        'Accept': '*/*',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload),
+    })
+
+    if (!response.ok) {
+      throw new Error(`Failed to update note (HTTP status = ${response.status})`)
+    }
   }
 }
 
