@@ -1,16 +1,45 @@
 import Note from './Note.ts';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import LoadableSubmitButton from '../common/LoadableSubmitButton.tsx';
+import notesApi from './notesApi.ts';
+import ErrorAlert from '../common/ErrorAlert.tsx';
+import LoadingSpinner from '../common/LoadingSpinner.tsx';
 
 interface NotesProps {
-  notes: Note[];
-  onSave: (note: Note) => Promise<void>;
 }
 
-const Notes = (props: NotesProps) => {
+const Notes = (_: NotesProps) => {
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [error, setError] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchNotes = async () => {
+      try {
+        setIsLoading(true);
+        const retrievedNotes = await notesApi.getNotes("2025-01-01", "2025-01-03"); // TODO: Use today's date
+        setNotes(retrievedNotes);
+        setIsLoading(false);
+      } catch (e) {
+        const errorMessage = (e as Error).message;
+        setError(errorMessage)
+        setIsLoading(false);
+        return;
+      }
+    }
+
+    void fetchNotes();
+  }, []);
+
+  async function handleSaveNote(_: Note) {
+    // TODO: Make API call to save note
+  }
+
   return <>
     <h2>Your daily notes</h2>
-    {props.notes.map((note: Note) => <NoteComponent note={note} onSave={props.onSave} key={note.noteId} />)}
+    {notes.map((note: Note) => <NoteComponent note={note} onSave={handleSaveNote} key={note.noteId} />)}
+    <ErrorAlert errorMessage={error} />
+    {isLoading && <LoadingSpinner />}
   </>;
 }
 
@@ -30,6 +59,8 @@ const NoteComponent = ({ note, onSave }: NoteProps) => {
     await onSave({...note, content: content});
     setSaveIsLoading(false);
   };
+
+  console.log("note.createdAt", typeof note.createdAt);
 
   return (
     <div>
