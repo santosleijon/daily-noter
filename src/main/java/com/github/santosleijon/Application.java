@@ -32,7 +32,7 @@ public class Application {
 
             config.bundledPlugins.enableCors(cors -> {
                 cors.addRule(it -> {
-                    it.allowHost("http://localhost:5173"); // TODO: Define with environment variable
+                    it.allowHost("http://localhost:5173", "https://daily-noter.santosleijon.dev"); // TODO: Define with environment variable
                     it.allowCredentials = true;
                 });
             });
