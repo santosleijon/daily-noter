@@ -39,4 +39,6 @@ build/
 /ops/docs.md
 /ops/run-db-container-prod.sh
 /ops/run-backend-container-prod.sh
+/ops/run-frontend-container-prod.sh
 /http-client.private.env.json
+/ui/.env.production

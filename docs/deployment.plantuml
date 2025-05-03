@@ -23,8 +23,8 @@ cloud vpc as "VPS" {
 
 User->nginx: HTTPS :443
 backend_rule-->backend_container: HTTP :8080
-frontend_rule-->frontend_container: HTTP :5173
-java_app-->postgresql: JDBC :5432
+frontend_rule-->frontend_container: HTTP :8081
+java_app-->db_container: JDBC :5432
 react_app->backend_rule: HTTPS :443
 
 @enduml
