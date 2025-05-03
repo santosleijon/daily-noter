@@ -1,0 +1,30 @@
+@startuml
+
+actor User
+
+cloud vpc as "VPS" {
+    node nginx as "NGINX" {
+        agent backend_rule as "daily-noter-backend.santosleijon.dev"
+        agent frontend_rule as "daily-noter.santosleijon.dev"
+    }
+
+    node Podman {
+        node frontend_container as "Frontend container" {
+            agent react_app as "React app"
+        }
+        node backend_container as "Backend container" {
+            agent java_app as "Java app"
+        }
+        node db_container as "DB container" {
+            database postgresql as "PostgreSQL"
+        }
+    }
+}
+
+User->nginx: HTTPS :443
+backend_rule-->backend_container: HTTP :8080
+frontend_rule-->frontend_container: HTTP :5173
+java_app-->postgresql: JDBC :5432
+react_app->backend_rule: HTTPS :443
+
+@enduml

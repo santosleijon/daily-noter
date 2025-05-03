@@ -19,4 +19,8 @@ The data is stored in the cloud, making the notes available anywhere on any devi
 * [AssertJ](https://github.com/assertj/assertj) - Provides a rich set of test assertion methods that read like natural language.
 
 **Deployment:**
-* [Docker containers with Podman](https://podman.io/) - Used to build and run this application as containerized services.
+* [Hetzner](https://www.hetzner.com/cloud/) - European cloud service provider with affordable virtual private server (VPS).
+* [NGINX](https://nginx.org/) - Used as a reverse proxy to route DNS names to different services exposed on different ports locally.
+* [Docker/OCI containers with Podman](https://podman.io/) - Used to build and run this application as containerized services.
+
+![Production deployment](https://github.com/santosleijon/daily-noter/blob/main/docs/deployment.png?raw=true)
