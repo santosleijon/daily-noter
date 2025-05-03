@@ -39,3 +39,4 @@ build/
 /ops/docs.md
 /ops/run-db-container-prod.sh
 /ops/run-backend-container-prod.sh
+/http-client.private.env.json
