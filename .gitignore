@@ -37,3 +37,5 @@ build/
 ### Project specific ###
 /db/migrations/03_insert_user.sql
 /ops/docs.md
+/ops/run-db-container-prod.sh
+/ops/run-backend-container-prod.sh
