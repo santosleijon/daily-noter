@@ -1,8 +1,8 @@
 ### Login
-POST http://localhost:8080/api/users/login
+POST {{baseUrl}}/api/users/login
 Content-Type: application/json
 
-{ "email": "user@example.com", "password": "my-secret-password" }
+{ "email": "{{userEmail}}", "password": "{{userPassword}}"  }
 
 > {%
     client.test("Login succeeded", function() {
@@ -12,7 +12,7 @@ Content-Type: application/json
 
 
 ### Get current user session after login
-GET http://localhost:8080/api/users/current-session
+GET {{baseUrl}}/api/users/current-session
 
 > {%
     client.test("Retrieval of valid user session succeeded", function() {
@@ -22,7 +22,7 @@ GET http://localhost:8080/api/users/current-session
 
 
 ### Get notes for three days
-GET http://localhost:8080/api/notes/?from=2024-01-01&to=2024-01-03
+GET {{baseUrl}}/api/notes/?from=2024-01-01&to=2024-01-03
 
 > {%
     client.test("Retrieval notes for three days succeeded", function() {
@@ -37,7 +37,7 @@ GET http://localhost:8080/api/notes/?from=2024-01-01&to=2024-01-03
 
 
 ### Update a note
-POST http://localhost:8080/api/notes/{{noteId1}}
+POST {{baseUrl}}/api/notes/{{noteId1}}
 Content-Type: application/json
 
 { "content": "Updated note content." }
@@ -49,38 +49,38 @@ Content-Type: application/json
 %}
 
 
-#### Delete note 1
-#DELETE http://localhost:8080/api/notes/{{noteId1}}
-#
-#> {%
-#    client.test("Deletion of note succeeded", function() {
-#        client.assert(response.status === 200, "Response status is not 200");
-#    });
-#%}
-#
-#
-#### Delete note 2
-#DELETE http://localhost:8080/api/notes/{{noteId2}}
-#
-#> {%
-#    client.test("Deletion of note succeeded", function() {
-#        client.assert(response.status === 200, "Response status is not 200");
-#    });
-#%}
-#
-#
-#### Delete note 3
-#DELETE http://localhost:8080/api/notes/{{noteId3}}
-#
-#> {%
-#    client.test("Deletion of note succeeded", function() {
-#        client.assert(response.status === 200, "Response status is not 200");
-#    });
-#%}
+### Delete note 1
+DELETE {{baseUrl}}/api/notes/{{noteId1}}
+
+> {%
+    client.test("Deletion of note succeeded", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+
+### Delete note 2
+DELETE {{baseUrl}}/api/notes/{{noteId2}}
+
+> {%
+    client.test("Deletion of note succeeded", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
+
+
+### Delete note 3
+DELETE {{baseUrl}}/api/notes/{{noteId3}}
+
+> {%
+    client.test("Deletion of note succeeded", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+%}
 
 
 ### Logout
-POST http://localhost:8080/api/users/logout
+POST {{baseUrl}}/api/users/logout
 
 > {%
     client.test("Login succeeded", function() {
@@ -90,7 +90,7 @@ POST http://localhost:8080/api/users/logout
 
 
 ### Get current user session after login
-GET http://localhost:8080/api/users/current-session
+GET {{baseUrl}}/api/users/current-session
 
 > {%
     client.test("Retrieval of expired user session succeeded", function() {
