@@ -9,12 +9,7 @@ const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState('');
 
-  function mockApiCallDelay() {
-    return new Promise(resolve => setTimeout(resolve, 750));
-  }
-
   async function handleLoginSuccess(email: string) {
-    await mockApiCallDelay();
     setIsLoggedIn(true);
     setUserEmail(email);
   }
