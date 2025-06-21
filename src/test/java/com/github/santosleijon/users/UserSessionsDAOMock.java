@@ -20,6 +20,13 @@ public class UserSessionsDAOMock implements UserSessionsDAO {
     public UserSession find(UUID sessionId) throws UserSessionNotFound {
         return userSessions.stream()
                 .filter(session -> session.sessionId().equals(sessionId))
+                .map(session -> new UserSession(session.sessionId(),
+                        session.userId(),
+                        session.userAgent(),
+                        session.ipAddress(),
+                        session.createdAt(),
+                        session.validTo(),
+                        "user@example.com"))
                 .findFirst()
                 .orElseThrow(() -> new UserSessionNotFound(sessionId));
     }

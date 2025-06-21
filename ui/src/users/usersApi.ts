@@ -1,3 +1,5 @@
+import UserSession from './UserSession.ts';
+
 const baseUrl = `${import.meta.env.VITE_API_URL}/users`
 
 const usersApi = {
@@ -34,7 +36,34 @@ const usersApi = {
     if (!response.ok) {
       throw new Error(`Failed to logout (HTTP status = ${response.status})`)
     }
-  }
+  },
+
+  async getCurrentUserSession(): Promise<UserSession | null> {
+    const response = await fetch(`${baseUrl}/current-session`, {
+      method: 'GET',
+      credentials: "include",
+    })
+
+    if (response.ok) {
+      const responseData = await response.json();
+
+      return {
+        sessionId: responseData.sessionId,
+        userId: responseData.userId,
+        userAgent: responseData.userAgent,
+        ipAddress: responseData.ipAddress,
+        createdAt: new Date(responseData.createdAt),
+        validTo: new Date(responseData.validTo),
+        userEmail: responseData.userEmail,
+      }
+    } else if (response.status === 401 || response.status === 403) {
+      return null;
+    } else if (!response.ok) {
+      throw new Error(`Failed to login (HTTP status = ${response.status})`);
+    }
+
+    return null;
+  },
 }
 
 export default usersApi;
