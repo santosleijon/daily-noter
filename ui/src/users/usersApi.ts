@@ -56,7 +56,7 @@ const usersApi = {
         validTo: new Date(responseData.validTo),
         userEmail: responseData.userEmail,
       }
-    } else if (response.status === 401 || response.status === 403) {
+    } else if (response.status === 400 || response.status === 401 || response.status === 403) {
       return null;
     } else if (!response.ok) {
       throw new Error(`Failed to login (HTTP status = ${response.status})`);
