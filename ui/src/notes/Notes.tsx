@@ -42,13 +42,11 @@ const Notes = (_: NotesProps) => {
 
   async function handleSaveNote(note: Note) {
     try {
-      setIsLoading(true);
       await notesApi.updateNote(note);
     } catch (e) {
       const errorMessage = (e as Error).message;
       setError(errorMessage);
     }
-    setIsLoading(false);
   }
 
   return <>
