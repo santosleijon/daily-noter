@@ -25,7 +25,7 @@ const Notes = (_: NotesProps) => {
   }
 
   const fetchNotes = async () => {
-    const notes = await notesApi.getNotes(getDateDaysAgo(2), getTodaysDate());
+    const notes = await notesApi.getNotes(getDateDaysAgo(4), getTodaysDate());
     setNotes(notes);
   }
 
