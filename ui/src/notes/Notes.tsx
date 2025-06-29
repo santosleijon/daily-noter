@@ -24,12 +24,16 @@ const Notes = (_: NotesProps) => {
     return date.toISOString().split('T')[0];
   }
 
+  const fetchNotes = async () => {
+    const notes = await notesApi.getNotes(getDateDaysAgo(2), getTodaysDate());
+    setNotes(notes);
+  }
+
   useEffect(() => {
-    const fetchNotes = async () => {
+    const fetchInitialNotes = async () => {
       try {
         setIsLoading(true);
-        const retrievedNotes = await notesApi.getNotes(getDateDaysAgo(2), getTodaysDate());
-        setNotes(retrievedNotes);
+        await fetchNotes();
       } catch (e) {
         const errorMessage = (e as Error).message;
         setError(errorMessage);
@@ -37,12 +41,13 @@ const Notes = (_: NotesProps) => {
       setIsLoading(false);
     };
 
-    void fetchNotes();
+    void fetchInitialNotes();
   }, []);
 
   async function handleSaveNote(note: Note) {
     try {
       await notesApi.updateNote(note);
+      await fetchNotes();
     } catch (e) {
       const errorMessage = (e as Error).message;
       setError(errorMessage);
