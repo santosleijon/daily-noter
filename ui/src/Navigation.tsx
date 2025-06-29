@@ -31,30 +31,30 @@ const Navigation = (props: NavigationProps) => {
   };
 
   return <nav className="bg-gray-100 shadow-md">
-    <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-      <ul className="flex space-x-6">
+    <div className="container mx-auto px-4 py-3 flex items-center">
+      <ul className="flex space-x-4">
         <li><a href="/" className="hover:text-indigo-600">Home</a></li>
-        {props.isLoggedIn &&
-          <>
-          </>
-        }
-      </ul>
-      {props.isLoggedIn && (
-        <ul className="flex space-x-6">
+
+        {props.isLoggedIn && (
           <li className="text-gray-600">
-            Welcome, <span className="font-semibold">{props.userEmail}</span>
+            <span className="font-semibold">{props.userEmail}</span>
           </li>
-          <li>
-            <a href="/" className="hover:text-indigo-600" onClick={handleLogout}>Log out</a>
-            {logoutIsLoading &&
-              <div className="inline-block mr-2"><LoadingSpinner color="gray-800" /></div>
-            }
-            {logoutErrorMessage &&
-              <div className="inline-block ml-2 text-red-900 text-xs bg-red-100 rounded-xl py-1 px-3">{logoutErrorMessage}</div>
-            }
-          </li>
-        </ul>
-      )}
+        )}
+
+        {props.isLoggedIn && (
+          <>
+            <li>
+              <a href="/" className="hover:text-indigo-600" onClick={handleLogout}>Log out</a>
+              {logoutIsLoading &&
+                <div className="inline-block mr-2"><LoadingSpinner color="gray-800" /></div>
+              }
+              {logoutErrorMessage &&
+                <div className="inline-block ml-2 text-red-900 text-xs bg-red-100 rounded-xl py-1 px-3">{logoutErrorMessage}</div>
+              }
+            </li>
+          </>
+        )}
+      </ul>
     </div>
   </nav>;
 };
