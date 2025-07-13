@@ -1,7 +1,6 @@
 # daily-noter
 
 **daily-noter** is a web application for writing daily notes as fast and easy as possible.
-The data is stored in the cloud, making the notes available anywhere on any device.
 
 **Disclaimer:** This application is built as a technical exercise and is not meant for production use.
 
@@ -17,6 +16,12 @@ The data is stored in the cloud, making the notes available anywhere on any devi
 * [JUnit Jupiter](https://junit.org/junit5/) - Testing framework for unit tests and integration tests (part of JUnit 5).
 * [Mockito](https://site.mockito.org/) - Framework for writing mocks in automated tests, mainly mocks of database integration classes in this project.
 * [AssertJ](https://github.com/assertj/assertj) - Provides a rich set of test assertion methods that read like natural language.
+
+**Frontend:**
+* [TypeScript](https://www.typescriptlang.org/) - Strongly typed programming language built on JavaScript.
+* [React](https://react.dev/) - JavaScript library for building web apps using reusable components.
+* [Vite](https://vite.dev/) - A fast build tool for development servers and production build.
+* [Tailwind](https://tailwindcss.com/) - A CSS framework that allows styling of HTML elements using predefined classes. 
 
 **Deployment:**
 * [Hetzner](https://www.hetzner.com/cloud/) - European cloud service provider with affordable virtual private server (VPS).
