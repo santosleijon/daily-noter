@@ -33,13 +33,13 @@ const Navigation = (props: NavigationProps) => {
   return <nav className="bg-gray-100 shadow-md">
     <div className="container mx-auto px-4 py-3 flex items-center">
       <ul className="flex space-x-4">
-        <li><a href="/" className="hover:text-indigo-600">Home</a></li>
-
         {props.isLoggedIn && (
           <li className="text-gray-600">
             <span className="font-semibold">{props.userEmail}</span>
           </li>
         )}
+
+        <li><a href="/" className="hover:text-indigo-600">Home</a></li>
 
         {props.isLoggedIn && (
           <>
