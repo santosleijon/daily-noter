@@ -4,6 +4,13 @@
 
 **Disclaimer:** This application is built as a technical exercise and is not meant for production use.
 
+## Roadmap / future features:
+- [x] Pagination
+- [ ] Calendar date picker
+- [ ] Search function
+- [ ] OCR image recognization: Upload a photo of a hand written note
+- [ ] AI summaries of notes
+
 ## Technology stack
 
 **Backend:**
