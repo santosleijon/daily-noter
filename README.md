@@ -6,7 +6,7 @@
 
 ## Roadmap / future features:
 - [x] Pagination
-- [ ] Calendar date picker
+- [x] Calendar date picker
 - [ ] Search function
 - [ ] OCR image recognization: Upload a photo of a hand written note
 - [ ] AI summaries of notes

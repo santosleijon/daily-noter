@@ -5,6 +5,7 @@ import ErrorAlert from '../common/ErrorAlert.tsx';
 import LoadingSpinner from '../common/LoadingSpinner.tsx';
 import NoteComponent from './NoteComponent.tsx';
 import LoadableSecondaryButton from '../common/LoadableSecondaryButton.tsx';
+import NotesDateWindowBar from './NotesDateWindowBar.tsx';
 
 interface NotesProps {
 }
@@ -13,29 +14,30 @@ const Notes = (_: NotesProps) => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [error, setError] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [cursorDaysBack, setCursorDaysBack] = useState<number>(4);
 
   const getTodaysDate = (): string => {
     const date = new Date();
     return date.toISOString().split('T')[0];
-  }
+  };
 
-  const getDateDaysAgo = (n: number): string => {
-    const date = new Date();
-    date.setDate(date.getDate() - Math.abs(n));
-    return date.toISOString().split('T')[0];
-  }
+  const getDateDaysAgo = (initialDate: Date, n: number): string => {
+    initialDate.setDate(initialDate.getDate() - Math.abs(n));
+    return initialDate.toISOString().split('T')[0];
+  };
 
-  const fetchNotes = async (cursorDaysBack: number) => {
-    const notes = await notesApi.getNotes(getDateDaysAgo(cursorDaysBack), getTodaysDate());
+  const [selectedToDate, setSelectedToDate] = useState<string>(getTodaysDate);
+  const [selectedFromDate, setSelectedFromDate] = useState<string>(getDateDaysAgo(new Date(), 4));
+
+  const fetchNotes = async () => {
+    const notes = await notesApi.getNotes(selectedFromDate, selectedToDate);
     setNotes(notes);
-  }
+  };
 
   useEffect(() => {
     const fetchInitialNotes = async () => {
       try {
         setIsLoading(true);
-        await fetchNotes(cursorDaysBack);
+        await fetchNotes();
       } catch (e) {
         const errorMessage = (e as Error).message;
         setError(errorMessage);
@@ -44,12 +46,12 @@ const Notes = (_: NotesProps) => {
     };
 
     void fetchInitialNotes();
-  }, [cursorDaysBack]);
+  }, [selectedFromDate, selectedToDate]);
 
   async function handleSaveNote(note: Note) {
     try {
       await notesApi.updateNote(note);
-      await fetchNotes(cursorDaysBack);
+      await fetchNotes();
     } catch (e) {
       const errorMessage = (e as Error).message;
       setError(errorMessage);
@@ -58,6 +60,13 @@ const Notes = (_: NotesProps) => {
 
   return <>
     <h2>Your daily notes</h2>
+
+    <NotesDateWindowBar
+      selectedFromDate={selectedFromDate}
+      selectedToDate={selectedToDate}
+      setSelectedFromDate={setSelectedFromDate}
+      setSelectedToDate={setSelectedToDate} />
+
     {isLoading && <LoadingSpinner />}
     <ErrorAlert errorMessage={error} />
     {!error && (
@@ -65,12 +74,15 @@ const Notes = (_: NotesProps) => {
         {notes.map((note: Note) => <NoteComponent note={note} onSave={handleSaveNote} key={note.noteId} />)}
         {notes.length > 0 && (
           <div className="text-center mt-6">
-            <LoadableSecondaryButton onClick={() => setCursorDaysBack(cursorDaysBack + 5)} isLoading={isLoading} text={`Show older notes`} />
+            <LoadableSecondaryButton
+              onClick={() => setSelectedFromDate(getDateDaysAgo(new Date(selectedFromDate), 5))}
+              isLoading={isLoading}
+              text={`Show older notes`} />
           </div>
         )}
       </>
     )}
   </>;
-}
-2
+};
+
 export default Notes;
